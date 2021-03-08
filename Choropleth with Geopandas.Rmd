@@ -1,0 +1,66 @@
+---
+title: "Maps with Geopandas"
+author: "Mussa Ngosha - Data Scientist, ngoshamussa@yahoo.com"
+date: "12/31/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Connect R with Python using reticulate function
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+```{r}
+require(reticulate)
+# For Anaconda
+use_python("C:/Users/dlab/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Anaconda3 (64-bit)")
+# For python 3.7
+use_python("C:/Users/dlab/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Python 3.7")
+# Installing python libraries through R environment
+#py_install("descartes")
+```
+```{r}
+# Set your working directory
+setwd("C:/Users/dlab/Desktop/Geopandas")
+```
+```{python}
+# import libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import geopandas as gpd
+import seaborn as sns
+import descartes 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+# read shapefile
+```
+```{python}
+world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+world.columns
+world = world[['name','geometry']]
+world.head()
+# calculate area of each country in Sq.Km
+world['Area'] = world.area/1000000
+world.head()
+#world.plot()
+# Remove Antarctica area
+world = world[world['name'] != 'Antarctica']
+# convert projection
+# check projection of the map
+current_crs = world.crs
+world.to_crs(epsg=3857, inplace = True)
+#world.plot(column = 'Area', cmap = 'hsv',legend = True, figsize  = (7,7))
+#Resize the legend
+fig,ax = plt.subplots(figsize = (10,10))
+divider = make_axes_locatable(ax)
+cax = divider.append_axes('right',size = '7%',pad = 0.1)
+world.plot(column = 'Area', cmap = 'hsv',legend = True,ax = ax,cax= cax, figsize  = (10,20), legend_kwds = {'label':"Area of the countries (Sq.Km)"})
+```
+
+
+
+
+
